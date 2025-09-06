@@ -1,8 +1,9 @@
 import 'package:flame/game.dart';
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(GameWidget(game: MyGame()));
+  runApp(MaterialApp(home: GameWidget<MyGame>.controlled(gameFactory: MyGame.new)));
 }
 
 class MyGame extends FlameGame {
