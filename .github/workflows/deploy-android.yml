@@ -35,34 +35,16 @@ jobs:
     - name: Run tests
       run: flutter test
 
-    - name: Configure Keystore
-      run: |
-        echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android/app/keystore.jks
-        echo "storeFile=keystore.jks" >> android/key.properties
-        echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
-        echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" >> android/key.properties
-        echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+    - name: Build APK (Debug)
+      run: flutter build apk --debug
 
-    - name: Build App Bundle
-      run: flutter build appbundle --release
-
-    - name: Build APK
+    - name: Build APK (Release - unsigned)
       run: flutter build apk --release
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: release-builds
+        name: apk-builds
         path: |
-          build/app/outputs/bundle/release/app-release.aab
+          build/app/outputs/flutter-apk/app-debug.apk
           build/app/outputs/flutter-apk/app-release.apk
-
-    - name: Deploy to Google Play Console
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-        packageName: com.katoryo.my_flutter_game
-        releaseFiles: build/app/outputs/bundle/release/app-release.aab
-        track: internal
-        status: completed
