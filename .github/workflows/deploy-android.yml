@@ -51,17 +51,43 @@ jobs:
     - name: Build APK (Release - signed with upload key) 
       run: flutter build apk --release
 
-    - name: Verify AAB file exists
+    - name: Backup signed AAB
+      run: |
+        mkdir -p build/app/outputs/bundle/release/backup
+        cp build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/backup/app-release-signed.aab
+
+    - name: Remove keystore temporarily for unsigned build
+      run: rm -f android/app/keystore.jks
+
+    - name: Build App Bundle (Release - unsigned)
+      run: flutter build appbundle --release
+
+    - name: Rename unsigned AAB
+      run: mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/app-release-unsigned.aab
+
+    - name: Restore signed AAB as default
+      run: cp build/app/outputs/bundle/release/backup/app-release-signed.aab build/app/outputs/bundle/release/app-release.aab
+
+    - name: Verify AAB files exist
       run: |
         ls -la build/app/outputs/bundle/release/
         file build/app/outputs/bundle/release/app-release.aab
-        echo "AAB file size: $(stat -c%s build/app/outputs/bundle/release/app-release.aab) bytes"
+        file build/app/outputs/bundle/release/app-release-unsigned.aab
+        echo "Signed AAB file size: $(stat -c%s build/app/outputs/bundle/release/app-release.aab) bytes"
+        echo "Unsigned AAB file size: $(stat -c%s build/app/outputs/bundle/release/app-release-unsigned.aab) bytes"
 
-    - name: Upload App Bundle for Google Play
+    - name: Upload Signed App Bundle for Google Play
       uses: actions/upload-artifact@v4
       with:
-        name: google-play-aab
+        name: google-play-aab-signed
         path: build/app/outputs/bundle/release/app-release.aab
+        retention-days: 30
+
+    - name: Upload Unsigned App Bundle for Google Play
+      uses: actions/upload-artifact@v4
+      with:
+        name: google-play-aab-unsigned
+        path: build/app/outputs/bundle/release/app-release-unsigned.aab
         retention-days: 30
 
     - name: Upload APK for testing
