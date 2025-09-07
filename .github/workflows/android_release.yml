@@ -46,12 +46,12 @@ jobs:
           ls -l android/app/src/main/res/mipmap-*/ic_launcher.png || true
           file android/app/src/main/res/mipmap-*/ic_launcher.png || true
 
-      - name: Prepare Android keystore
+      - name: Prepare Android keystore (upload key)
         if: ${{ secrets.ANDROID_KEYSTORE && secrets.ANDROID_STORE_PASSWORD && secrets.ANDROID_KEY_ALIAS && secrets.ANDROID_KEY_PASSWORD }}
         run: |
           echo "Decoding keystore"
-          mkdir -p android
-          echo "$ANDROID_KEYSTORE" | base64 --decode > android/keystore.jks
+          mkdir -p android/app
+          echo "$ANDROID_KEYSTORE" | base64 --decode > android/app/keystore.jks
           cat > android/key.properties << 'EOF'
           storePassword=${ANDROID_STORE_PASSWORD}
           keyPassword=${ANDROID_KEY_PASSWORD}
