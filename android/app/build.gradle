@@ -14,12 +14,12 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+    flutterVersionCode = '2'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.0.1'
 }
 
 // Keystore properties
@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.katoryo.my_flutter_game"
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -49,7 +49,7 @@ android {
     defaultConfig {
         applicationId "com.katoryo.my_flutter_game"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
