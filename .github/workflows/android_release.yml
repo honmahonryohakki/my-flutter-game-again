@@ -11,8 +11,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: Checkout (with LFS)
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -28,6 +30,21 @@ jobs:
 
       - name: Flutter version
         run: flutter --version
+
+      - name: Ensure Android SDK packages (API 35)
+        run: |
+          if [ -n "$ANDROID_HOME" ] && [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+              "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          else
+            echo "sdkmanager not found; relying on default image SDK"
+          fi
+
+      - name: Sanity check app icons
+        run: |
+          ls -l android/app/src/main/res/mipmap-*/ic_launcher.png || true
+          file android/app/src/main/res/mipmap-*/ic_launcher.png || true
 
       - name: Prepare Android keystore
         if: ${{ secrets.ANDROID_KEYSTORE && secrets.ANDROID_STORE_PASSWORD && secrets.ANDROID_KEY_ALIAS && secrets.ANDROID_KEY_PASSWORD }}
@@ -88,4 +105,3 @@ jobs:
             build/app/outputs/flutter-apk/app-release.apk
           draft: false
           prerelease: false
-

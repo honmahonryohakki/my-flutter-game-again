@@ -38,22 +38,10 @@ jobs:
     - name: Clean build directory
       run: flutter clean && flutter pub get
 
-    - name: Generate Upload Keystore and Certificate
-      run: |
-        keytool -genkey -v -keystore android/app/keystore.jks \
-          -keyalg RSA -keysize 2048 -validity 10000 -alias upload \
-          -storepass android123 -keypass android123 \
-          -dname "CN=Katoryo Games, OU=Development, O=Katoryo Games, L=Tokyo, S=Tokyo, C=JP"
-        
-        # Export certificate for Play Console upload key registration
-        keytool -export -rfc -keystore android/app/keystore.jks \
-          -alias upload -file upload_certificate.pem \
-          -storepass android123
-
-    - name: Build App Bundle (Release - signed)
+    - name: Build App Bundle (Release - unsigned for Google Play App Signing)
       run: flutter build appbundle --release
 
-    - name: Build APK (Release - signed) 
+    - name: Build APK (Release - unsigned for testing) 
       run: flutter build apk --release
 
     - name: Verify AAB file exists
@@ -76,9 +64,3 @@ jobs:
         path: build/app/outputs/flutter-apk/app-release.apk
         retention-days: 30
 
-    - name: Upload Upload Certificate
-      uses: actions/upload-artifact@v4
-      with:
-        name: upload-certificate
-        path: upload_certificate.pem
-        retention-days: 30

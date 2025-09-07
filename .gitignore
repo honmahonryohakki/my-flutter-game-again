@@ -6,3 +6,9 @@ ios/Pods/
 android/.gradle/
 *.iml
 .idea/
+# macOS Finder junk
+.DS_Store
+*/.DS_Store
+# Android signing (never commit)
+android/key.properties
+android/app/keystore.jks

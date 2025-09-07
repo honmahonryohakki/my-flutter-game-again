@@ -65,10 +65,8 @@ android {
 
     buildTypes {
         release {
-            // Only use signing config if keystore properties are available
-            if (keystorePropertiesFile.exists()) {
-                signingConfig signingConfigs.release
-            }
+            // Use unsigned build for Google Play App Signing
+            // Google Play will handle the final signing
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
