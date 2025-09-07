@@ -35,20 +35,31 @@ jobs:
     - name: Run tests
       run: flutter test
 
-    - name: Build APK (Debug)
-      run: flutter build apk --debug
-
-    - name: Build APK (Release - unsigned)
-      run: flutter build apk --release
+    - name: Clean build directory
+      run: flutter clean && flutter pub get
 
     - name: Build App Bundle (Release - unsigned)
       run: flutter build appbundle --release
 
-    - name: Upload artifacts
+    - name: Build APK (Release - unsigned) 
+      run: flutter build apk --release
+
+    - name: Verify AAB file exists
+      run: |
+        ls -la build/app/outputs/bundle/release/
+        file build/app/outputs/bundle/release/app-release.aab
+        echo "AAB file size: $(stat -c%s build/app/outputs/bundle/release/app-release.aab) bytes"
+
+    - name: Upload App Bundle for Google Play
       uses: actions/upload-artifact@v4
       with:
-        name: android-builds
-        path: |
-          build/app/outputs/flutter-apk/app-debug.apk
-          build/app/outputs/flutter-apk/app-release.apk
-          build/app/outputs/bundle/release/app-release.aab
+        name: google-play-aab
+        path: build/app/outputs/bundle/release/app-release.aab
+        retention-days: 30
+
+    - name: Upload APK for testing
+      uses: actions/upload-artifact@v4  
+      with:
+        name: testing-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
