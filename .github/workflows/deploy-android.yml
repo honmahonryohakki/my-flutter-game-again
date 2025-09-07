@@ -41,10 +41,14 @@ jobs:
     - name: Build APK (Release - unsigned)
       run: flutter build apk --release
 
+    - name: Build App Bundle (Release - unsigned)
+      run: flutter build appbundle --release
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: apk-builds
+        name: android-builds
         path: |
           build/app/outputs/flutter-apk/app-debug.apk
           build/app/outputs/flutter-apk/app-release.apk
+          build/app/outputs/bundle/release/app-release.aab
